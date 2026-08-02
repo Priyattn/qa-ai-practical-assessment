@@ -1,0 +1,43 @@
+---
+description: NEXA QA practical assessment — Playwright, read-only production testing, submission conventions
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# NEXA QA Assessment Rules
+
+## Application scope
+
+- **UI:** https://www.nexaexperience.com/ — read-only flows only (AC1 Car Discovery, AC2 Dealer Locator).
+- **API:** https://jsonplaceholder.typicode.com/ — dummy contract tests only; not NEXA backend.
+- **Never automate:** test drive booking, service booking, Book a Car, dealer contact, or any form that creates real leads.
+
+## Repository conventions
+
+- Playwright project lives in `PrismStructure-nexa-playwright/`.
+- Run tests: `cd PrismStructure-nexa-playwright` then `npm test`.
+- Manual cases: `manual-test-cases/FunctionalTestCase.csv`.
+- Execution evidence: copy HTML report to `execution-evidence/` after runs.
+- AI prompt history: update `ai-prompts/` after each significant Cursor session.
+
+## Automation standards
+
+- Page Object Model via `POManager` and `ui/pageobjects/`.
+- Single worker in `playwright.config.js` (production site load discipline).
+- Selectors: ARIA roles and stable `href` paths over brittle text/CSS.
+- Tag tests: `@smoke` and `@regression` in spec titles.
+- Assert structure on live site (presence, counts, URLs) — not exact dealer names or marketing copy.
+
+## AI usage
+
+- Record prompts and summaries in `ai-prompts/` (requirements, test-design, test-data, automation-and-debugging, documentation-and-summary).
+- Validate AI-generated selectors against live DOM before committing.
+- Do not paste secrets, API keys, or real personal data into prompts.
+
+## Submission checklist
+
+- `requirements-and-risk-analysis.md`, `project-info.md`, `readme.md` current.
+- All automated tests pass; manual CSV statuses updated.
+- `execution-evidence/` contains latest Playwright HTML report.
+- Git: iterative commits; public repo URL for submission.

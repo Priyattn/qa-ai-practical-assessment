@@ -1,0 +1,33 @@
+{
+  "validCities": [
+  {
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "city": "Bangalore",
+    "state": "Karnataka"
+  }
+  ],
+  "noDealerLocation": {
+    "city": "Lakshadweep",
+    "description": "Remote location with few or no NEXA showrooms within default radius"
+  },
+  "invalidLocation": {
+    "city": "ZZZNoDealerCity12345",
+    "description": "Fabricated location for empty-state testing"
+  },
+  "remotePincode": {
+    "pincode": "000000",
+    "description": "Invalid/zero pincode to trigger no-results or validation on production locator"
+  },
+  "models": {
+    "default": "fronx",
+    "alternatives": ["baleno", "grand-vitara", "xl6"]
+  },
+  "invalidModelPath": "/nonexistent-car-xyz-999"
+}

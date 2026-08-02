@@ -1,0 +1,19 @@
+Test Case ID,Test Suite,Test Type,Module,Test Scenario,Automation Status,Execution Status,Execution Date,Executed By,Notes
+TC-UI-01,Smoke + Regression,UI,Car Discovery,Homepage loads with featured car content,Automated,Pass,2026-07-31,Playwright Chromium,8 featured model links visible
+TC-UI-02,Regression,UI,Car Discovery,Navigation menu exposes car model links,Automated,Pass,2026-07-31,Playwright Chromium,8 model links in DOM after Cars menu
+TC-UI-03,Smoke + Regression,UI,Car Discovery,Navigate to car model detail page,Automated,Pass,2026-07-31,Playwright Chromium,Navigated to /fronx
+TC-UI-04,Regression,UI,Car Discovery,Model detail page displays price and specs,Automated,Pass,2026-07-31,Playwright Chromium,Price and specs/variants visible
+TC-UI-05,Regression,UI,Car Discovery,Build Your Own link present on model page,Automated,Pass,2026-07-31,Playwright Chromium,Link visible on model page
+TC-UI-06,Regression,UI,Car Discovery,Invalid model URL handled gracefully,Automated,Pass,2026-07-31,Playwright Chromium,Invalid URL handled without server error
+TC-UI-07,Regression,UI,Car Discovery,Homepage loads within acceptable time,Automated,Pass,2026-07-31,Playwright Chromium,Loaded in ~1.5–2s
+TC-UI-08,Regression,UI,Dealer Locator,Locate showroom entry visible on homepage,Automated,Pass,2026-07-31,Playwright Chromium,Showroom section + Explore Nearby link visible
+TC-UI-09,Smoke + Regression,UI,Dealer Locator,Dealer search with valid city returns results,Automated,Pass,2026-07-31,Playwright Chromium,Mumbai search returned showrooms
+TC-UI-10,Regression,UI,Dealer Locator,Dealer results include Navigate links,Automated,Pass,2026-07-31,Playwright Chromium,Navigate controls present with valid target
+TC-UI-11,Regression,UI,Dealer Locator,Invalid pincode search handled without crash,Automated,Pass,2026-07-31,Playwright Chromium,Pincode 000000 — no crash (production may show default dealers)
+TC-UI-12,Regression,UI,Dealer Locator,Empty dealer search handled without crash,Automated,Pass,2026-07-31,Playwright Chromium,Empty city search graceful
+TC-UI-13,Regression,UI,Dealer Locator,Dealer locator page loads within timeout,Automated,Pass,2026-07-31,Playwright Chromium,Page loaded within 90s budget
+TC-API-01,Smoke + Regression,API,JSONPlaceholder,GET /posts returns list,Automated,Pass,2026-07-31,Playwright request,100 posts returned
+TC-API-02,Smoke + Regression,API,JSONPlaceholder,GET /posts/{id} returns matching resource,Automated,Pass,2026-07-31,Playwright request,id=1 matched
+TC-API-03,Regression,API,JSONPlaceholder,GET /posts/{invalid-id} returns 404,Automated,Pass,2026-07-31,Playwright request,404 for id 99999
+TC-API-04,Smoke + Regression,API,JSONPlaceholder,POST /posts with valid payload returns 201,Automated,Pass,2026-07-31,Playwright request,201 with echoed payload
+TC-API-05,Regression,API,JSONPlaceholder,POST /posts malformed payload no 5xx,Automated,Pass,2026-07-31,Playwright request,Status < 500 (201 returned)

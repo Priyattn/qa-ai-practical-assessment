@@ -1,0 +1,11 @@
+{
+  "validPost": {
+    "title": "NEXA QA Assessment Test Post",
+    "body": "Dummy API automation — JSONPlaceholder POST validation",
+    "userId": 1
+  },
+  "malformedPost": {
+    "title": 12345,
+    "body": null
+  }
+}

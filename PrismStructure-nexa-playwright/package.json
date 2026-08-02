@@ -1,0 +1,23 @@
+{
+  "name": "nexa-qa-automation",
+  "version": "1.0.0",
+  "description": "NEXA UI (read-only) + JSONPlaceholder API automation",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:smoke": "npx playwright test --grep @smoke",
+    "test:regression": "npx playwright test --grep @regression",
+    "test:ui": "npx playwright test tests/ui",
+    "test:api": "npx playwright test tests/api",
+    "test:headed": "npx playwright test --headed",
+    "report": "npx playwright show-report playwright-report",
+    "install:browsers": "npx playwright install chromium"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^20.6.2"
+  }
+}

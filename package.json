@@ -1,0 +1,19 @@
+{
+  "name": "qa-ai-practical-assessment-main",
+  "version": "1.0.0",
+  "description": "NEXA QA assessment — run Playwright from PrismStructure-nexa-playwright/ or use npm scripts below",
+  "private": true,
+  "scripts": {
+    "test": "npm --prefix PrismStructure-nexa-playwright test",
+    "test:ui": "npm --prefix PrismStructure-nexa-playwright run test:ui",
+    "test:api": "npm --prefix PrismStructure-nexa-playwright run test:api",
+    "test:smoke": "npm --prefix PrismStructure-nexa-playwright run test:smoke",
+    "test:regression": "npm --prefix PrismStructure-nexa-playwright run test:regression",
+    "test:headed": "npm --prefix PrismStructure-nexa-playwright run test:headed",
+    "report": "npm --prefix PrismStructure-nexa-playwright run report",
+    "install:playwright": "npm --prefix PrismStructure-nexa-playwright install && npm --prefix PrismStructure-nexa-playwright exec playwright install chromium"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
