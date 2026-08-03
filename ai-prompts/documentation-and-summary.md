@@ -1,11 +1,11 @@
 # AI Prompts — Documentation and Summary
 
-**Session date:** 2026-07-31  
-**Assessment:** NEXA QA Practical Assessment (Playwright + AI-assisted QA workflow)
+**Session dates:** 2026-07-31 to 2026-08-03  
+**Assessment:** QA AI Practical Assessment (Toolshop Part B + NEXA secondary)
 
 ---
 
-## Entry 1
+## Entry 1 — NEXA framework delivery (2026-07-31)
 
 **Prompt:**
 
@@ -13,45 +13,63 @@
 
 **AI Response Summary:**
 
-This session delivered:
+1. Requirements review — AC1/AC2 scoped for live production (read-only UI + dummy API)
+2. Manual test cases — 20 NEXA cases (TC-MAN-01 to TC-MAN-20)
+3. Playwright framework — 18 automated tests (13 UI + 5 API), all passing
+4. AI prompt archive — `ai-prompts/*.md`
+5. Session handoff + framework documentation
 
-1. **Requirements review** — AC1/AC2 scoped for live production (read-only UI + dummy API)
-2. **Manual test cases** — 20 cases (TC-MAN-01 to TC-MAN-20) in CSV format
-3. **Playwright framework** — 18 automated tests (13 UI + 5 API), all passing
-4. **AI prompt archive** — all `ai-prompts/*.md` files
-5. **Session handoff** — `ai-prompts/session-handoff.md`
-6. **Framework documentation** — `frameworkdevelopment.md`
+---
+
+## Entry 2 — Toolshop Part B integration (2026-08-01 to 2026-08-03)
+
+**Prompt:**
+
+Assessment Part B — add Toolshop to same framework: manual CSV, project-info, folder rename, JSDoc, specs in existing `PrismStructure-playwright/`.
+
+**AI Response Summary:**
+
+1. **Toolshop manual tests** — `manual-test-cases/ToolshopFunctionalTestCase.csv` (8 cases, TC-MAN-TS-01 to TC-MAN-TS-08)
+2. **Toolshop page objects** — `toolshopPOManager.js` + login, home, product, checkout, invoices pages
+3. **Toolshop specs** — 7 UI + 7 API tests (`TC-TS-UI-*`, `TC-TS-API-*`)
+4. **Playwright projects** — `ui-toolshop`, `api-toolshop` added to `playwright.config.js`
+5. **Folder rename** — `PrismStructure-nexa-playwright` → `PrismStructure-playwright`
+6. **Docs updated** — `project-info.md`, `readme.md`, `requirements-and-risk-analysis.md`, `frameworkdevelopment.md`
+7. **Product ID fix** — demo DB reset; refreshed `toolshopProductData.json`
+8. **JSDoc** — all page object methods documented
 
 ### Deliverables map
 
 | Artifact | Path |
 |----------|------|
-| Requirements analysis | `requirements-and-risk-analysis (1).md` |
-| Manual test cases CSV | `manual-test-cases/FunctionalTestCase.csv` |
-| Automation framework | `PrismStructure-nexa-playwright/` |
-| Playwright HTML report | `PrismStructure-nexa-playwright/playwright-report/index.html` |
-| MCP config | `.cursor/mcp.json` |
+| Requirements analysis | `requirements-and-risk-analysis.md` |
+| NEXA manual CSV | `manual-test-cases/FunctionalTestCase.csv` |
+| Toolshop manual CSV | `manual-test-cases/ToolshopFunctionalTestCase.csv` |
+| Automation framework | `PrismStructure-playwright/` |
+| Playwright HTML report | `PrismStructure-playwright/playwright-report/index.html` |
+| Execution evidence | `execution-evidence/index.html` |
+| Exploratory notes | `exploratory-testing/exploratory-notes.md` |
+| Defect report | `defects/defect-report.md` |
 | AI prompt history | `ai-prompts/` |
 | Session handoff | `ai-prompts/session-handoff.md` |
 | Framework doc | `frameworkdevelopment.md` |
+| Project workflow doc | `project-info.md` |
+| Run guide | `readme.md` |
 
 ### Test coverage summary
 
-| Layer | Automated | Manual |
+| Suite | Automated | Manual |
 |-------|-----------|--------|
-| AC1 Car Discovery | TC-UI-01 to TC-UI-07 | TC-MAN-01 to TC-MAN-10 |
-| AC2 Dealer Locator | TC-UI-08 to TC-UI-13 | TC-MAN-11 to TC-MAN-20 |
-| API Dummy | TC-API-01 to TC-API-05 | — |
-| **Total** | **18** | **20** |
+| Toolshop UI | 7 (TC-TS-UI-*) | 7 (TC-MAN-TS-01 to 07) |
+| Toolshop API | 7 (TC-TS-API-*) | 1 (TC-MAN-TS-08) |
+| NEXA UI | 13 (TC-UI-*) | 20 (TC-MAN-01 to 20) |
+| JSONPlaceholder API | 5 (TC-API-*) | — |
+| **Total automated** | **32** | **28 manual** |
 
-### Out of scope (documented)
+### Validation
 
-- Test drive, service booking, Book a Car, dealer contact forms
-- AC3 Help Me Select quiz completion (visibility only in TC-MAN-10)
-- Exact dealer/map accuracy on production locator
-
-**Validation Notes:**
-- Full suite run: 18 passed (~1–2 min).
-- User path issues resolved with explicit `cd` instructions to nested `automation` folder.
+- `npm run test:toolshop` — 14/14 pass
+- `npm test` — 32/32 pass (2026-08-03)
+- Repo: https://github.com/Priyattn/qa-ai-practical-assessment
 
 ---

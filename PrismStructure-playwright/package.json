@@ -1,7 +1,7 @@
 {
-  "name": "nexa-qa-automation",
+  "name": "qa-playwright-automation",
   "version": "1.0.0",
-  "description": "NEXA UI (read-only) + JSONPlaceholder API automation",
+  "description": "Toolshop + NEXA UI and API Playwright automation",
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
@@ -9,6 +9,8 @@
     "test:regression": "npx playwright test --grep @regression",
     "test:ui": "npx playwright test tests/ui",
     "test:api": "npx playwright test tests/api",
+    "test:toolshop": "npx playwright test --project=ui-toolshop --project=api-toolshop",
+    "test:nexa": "npx playwright test --project=ui-nexa --project=api-jsonplaceholder",
     "test:headed": "npx playwright test --headed",
     "report": "npx playwright show-report playwright-report",
     "install:browsers": "npx playwright install chromium"

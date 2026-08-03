@@ -1,154 +1,187 @@
-# NEXA QA Automation — Playwright Framework
+# QA AI Practical Assessment — Playwright Framework
 
 ## Project Information
 
-**Application Under Test (UI):** https://www.nexaexperience.com/ *(live production site — read-only flows only)*
-**API Under Test (Dummy):** https://jsonplaceholder.typicode.com/
+| Suite | UI | API |
+|-------|-----|-----|
+| **Toolshop (assessment SUT)** | https://practicesoftwaretesting.com/ | https://api.practicesoftwaretesting.com/ |
+| **NEXA (read-only)** | https://www.nexaexperience.com/ | https://jsonplaceholder.typicode.com/ (dummy) |
 
-**Framework:** Playwright (JavaScript)
+**Framework:** Playwright (JavaScript), Page Object Model, `POManager` / `ToolshopPOManager`
 
-**Test Types:** UI Automation (read-only) + API Automation (dummy) | Smoke + Regression
-
-> **Scoping note:** NEXA has no public test/staging environment. All UI tests are restricted to non-destructive browsing/search flows. Test drive booking, service booking, "Book a Car," and dealer-contact forms are intentionally **not automated** — see `requirements-and-risk-analysis.md` for the full rationale. API automation targets a separate dummy API (JSONPlaceholder) with no relation to NEXA's real backend.
+**Test types:** UI + API | `@smoke` + `@regression`
 
 ---
 
 ## Folder Structure
 
 ```
-nexa-qa-assessment/
-├── PrismStructure-nexa-playwright/        ← Playwright automation project
+qa-ai-practical-assessment-main/
+├── PrismStructure-playwright/     ← single Playwright project (Toolshop + NEXA)
 │   ├── api/
-│   │   ├── objects/                     ← Dummy API endpoint/body definitions
-│   │   │   └── postsApiPage.js
-│   │   └── testdata/                    ← Static JSON payloads for POST tests
+│   │   ├── objects/
+│   │   │   ├── postsApiPage.js         ← JSONPlaceholder
+│   │   │   └── toolshopApiPage.js      ← Practice Software Testing API
+│   │   └── testdata/
 │   ├── ui/
 │   │   ├── pageobjects/
-│   │   │   ├── homePage.js
-│   │   │   ├── modelDetailPage.js
-│   │   │   ├── dealerLocatorPage.js
-│   │   │   └── POManager.js
-│   │   └── resources/data/              ← dealerSearchData.json
+│   │   │   ├── POManager.js            ← NEXA pages
+│   │   │   ├── homePage.js, modelDetailPage.js, dealerLocatorPage.js
+│   │   │   ├── toolshopPOManager.js    ← Toolshop pages
+│   │   │   └── toolshop*.js
+│   │   └── resources/data/
 │   ├── tests/
 │   │   ├── ui/
 │   │   │   ├── 01_carDiscovery.spec.js
-│   │   │   └── 02_dealerLocator.spec.js
+│   │   │   ├── 02_dealerLocator.spec.js
+│   │   │   ├── 03_toolshopCatalogAuth.spec.js
+│   │   │   └── 04_toolshopCheckoutInvoices.spec.js
 │   │   └── api/
-│   │       └── 01_postsApi.spec.js
+│   │       ├── 01_postsApi.spec.js
+│   │       ├── 02_toolshopAuthProductsApi.spec.js
+│   │       └── 03_toolshopCartInvoiceApi.spec.js
 │   ├── playwright.config.js
 │   └── package.json
 ├── manual-test-cases/
-│   └── FunctionalTestCase.csv
-├── exploratory-testing/
-│   └── exploratory-notes.md
-├── defects/
-│   └── defect-report.md
+│   ├── FunctionalTestCase.csv           ← NEXA manual (20)
+│   └── ToolshopFunctionalTestCase.csv   ← Toolshop manual (8)
 ├── ai-prompts/
-│   ├── requirements-and-planning.md
-│   ├── test-design.md
-│   ├── test-data.md
-│   ├── automation-and-debugging.md
-│   └── documentation-and-summary.md
 ├── execution-evidence/
-│   └── (screenshots / Playwright HTML report)
-├── requirements-and-risk-analysis.md
-├── project-info.md                      ← AI workflow documentation (tool-workflow.md content)
-└── readme.md                            ← This file
+├── project-info.md
+└── readme.md
 ```
 
 ---
 
 ## Prerequisites
 
-1. Node.js v18+ from https://nodejs.org/en
-2. npm (comes with Node.js)
-3. Git
+Node.js v18+, npm, Git
 
 ---
 
 ## Installation
 
-```bash
-cd PrismStructure-nexa-playwright
+```powershell
+cd PrismStructure-playwright
 npm install
 npx playwright install chromium
+```
+
+Or from project root:
+
+```powershell
+npm run install:playwright
 ```
 
 ---
 
 ## Running Tests
 
-```bash
-cd PrismStructure-nexa-playwright
+```powershell
+cd PrismStructure-playwright
 
-# All tests
+# All suites (NEXA + Toolshop + APIs)
 npm test
 
-# Smoke only
-npm run test:smoke
+# Assessment Toolshop only
+npm run test:toolshop
 
-# Regression only
+# NEXA + JSONPlaceholder only
+npm run test:nexa
+
+# By tag
+npm run test:smoke
 npm run test:regression
 
-# UI only
+# By layer
 npm run test:ui
-
-# API only
 npm run test:api
 
-# Headed (visible browser)
+# Headed
 npm run test:headed
 ```
+
+**Playwright projects** (in `playwright.config.js`):
+
+| Project | Specs | Base URL |
+|---------|-------|----------|
+| `ui-toolshop` | `tests/ui/*toolshop*.spec.js` | practicesoftwaretesting.com |
+| `api-toolshop` | `tests/api/*toolshop*.spec.js` | api.practicesoftwaretesting.com |
+| `ui-nexa` | `01_*.spec.js`, `02_*.spec.js` | nexaexperience.com |
+| `api-jsonplaceholder` | `01_postsApi.spec.js` | jsonplaceholder.typicode.com |
 
 ---
 
 ## Test Report
 
-After execution:
-```bash
+```powershell
 npm run report
 ```
-Opens the Playwright HTML report at `PrismStructure-nexa-playwright/playwright-report/index.html`.
 
-A copy of the report is saved to `execution-evidence/` for submission.
+Report: `PrismStructure-playwright/playwright-report/index.html`
+
+Copy to `execution-evidence/` for submission.
 
 ---
 
-## Key Test Scenarios
+## Toolshop Key Scenarios (Assessment Part B)
 
 | ID | Type | Scenario | Tags |
-|---|---|---|---|
-| TC-UI-01 | UI Smoke | Homepage loads with featured car content | @smoke @regression |
-| TC-UI-03 | UI Smoke | Navigate to a car model detail page | @smoke @regression |
-| TC-UI-06 | UI Regression | Invalid model URL handled gracefully | @regression |
-| TC-UI-07 | UI Smoke | Dealer search with valid city returns results | @smoke @regression |
-| TC-UI-08 | UI Regression | Dealer search with no nearby results shows empty state | @regression |
-| TC-UI-09 | UI Regression | Empty dealer search input handled without crash | @regression |
-| TC-API-01 | API Smoke | GET /posts returns list | @smoke @regression |
-| TC-API-02 | API Smoke | GET /posts/{id} returns matching resource | @smoke @regression |
-| TC-API-03 | API Regression | GET /posts/{invalid} returns 404 | @regression |
-| TC-API-04 | API Smoke | POST /posts with valid payload returns 201 | @smoke @regression |
+|----|------|----------|------|
+| TC-TS-UI-01 | UI | Homepage product catalog | @smoke @regression |
+| TC-TS-UI-02 | UI | Customer login | @smoke @regression |
+| TC-TS-UI-05 | UI | COD checkout + invoice (double Confirm) | @smoke @regression |
+| TC-TS-API-01 | API | POST login → bearer token | @smoke @regression |
+| TC-TS-API-06 | API | POST invoice cash-on-delivery | @smoke @regression |
+
+**Invoice UI note:** Click `finish` then `Confirm` (twice if modal re-prompts) — per assessment doc.
 
 ---
 
-## Important Notes
+## NEXA Key Scenarios (Read-only)
 
-- **Live production site:** No automated form submissions (test drive, service booking, book-a-car, dealer contact). All UI coverage is read-only navigation and search verification.
-- **Dummy API:** JSONPlaceholder does not persist POST data — assertions validate response shape/status code, not real persistence.
-- **Selectors:** Preference order is `data-*` attributes > ARIA roles > structural CSS — avoided brittle text-based selectors where site copy may change.
-- **Workers:** Single worker used to minimize load on the live site.
-- **Content drift:** As a live marketing site, car models/pricing/imagery may change between runs — tests assert structure/presence, not exact copy.
+| ID | Type | Scenario |
+|----|------|----------|
+| TC-UI-01 | UI | Homepage featured content |
+| TC-UI-09 | UI | Dealer city search |
+| TC-API-01 | API | GET /posts list |
+
+NEXA: no form submissions (test drive, booking, dealer contact).
 
 ---
 
-## AI Prompts Folder
+## Test Data
 
-Full Cursor AI prompt history lives in `ai-prompts/`. Each file records prompts, AI response summaries, and validation/correction notes.
+| File | Use |
+|------|-----|
+| `ui/resources/data/toolshopUserData.json` | Toolshop login |
+| `ui/resources/data/toolshopBillingData.json` | Checkout billing |
+| `ui/resources/data/toolshopProductData.json` | Sample product ID |
+| `api/testdata/toolshopCredentials.json` | API auth |
+| `api/testdata/toolshopInvoicePayload.json` | API invoice body |
+| `ui/resources/data/dealerSearchData.json` | NEXA dealer search |
+
+---
+
+## AI Prompts
+
+See `ai-prompts/` for Cursor prompt history.
+
+---
+
+## Documentation index
 
 | File | Purpose |
 |------|---------|
-| `requirements-and-planning.md` | Requirement breakdown, scoping decisions (what NOT to automate), risk analysis |
-| `test-design.md` | Manual/automation test case design |
-| `test-data.md` | Dealer search inputs, API payloads |
-| `automation-and-debugging.md` | Page objects, selector fixes, flakiness investigation |
-| `documentation-and-summary.md` | README / project-info drafting |
+| `readme.md` | Setup, run commands, folder structure |
+| `project-info.md` | Assessment workflow — 11 AI usage points |
+| `requirements-and-risk-analysis.md` | Part B Toolshop + NEXA requirements, risks, traceability |
+| `frameworkdevelopment.md` | POM architecture, config, selectors, debugging |
+| `defects/defect-report.md` | Observations and defect log |
+| `exploratory-testing/exploratory-notes.md` | Exploratory session findings |
+| `ai-prompts/session-handoff.md` | Session status and file index |
+| `ai-prompts/requirements-and-planning.md` | Planning prompts archive |
+| `ai-prompts/test-design.md` | Manual test design prompts |
+| `ai-prompts/test-data.md` | Test data strategy prompts |
+| `ai-prompts/automation-and-debugging.md` | Framework build + debug prompts |
+| `ai-prompts/documentation-and-summary.md` | Deliverables summary |

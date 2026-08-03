@@ -1,7 +1,7 @@
-# Framework Development — NEXA QA Playwright Automation
+# Framework Development — QA Playwright Automation
 
-**Version:** 1.0.0  
-**Date:** 2026-07-31  
+**Version:** 2.0.0  
+**Date:** 2026-08-03  
 **Stack:** Playwright (JavaScript), Page Object Model, Chromium  
 **Author:** AI-assisted development via Cursor
 
@@ -9,71 +9,80 @@
 
 ## 1. Purpose
 
-Automated test suite for the NEXA QA practical assessment covering:
+Single Playwright framework covering **two application suites**:
 
-- **AC1** — Car Discovery (homepage → model detail, read-only)
-- **AC2** — Dealer Locator (search and results structure, read-only)
-- **API-DUMMY** — JSONPlaceholder GET/POST contract validation (independent of NEXA backend)
+| Suite | Role | Coverage |
+|-------|------|----------|
+| **Toolshop (Part B)** | Assessment primary SUT | UI login, catalog, cart, COD checkout, invoices + API auth/products/cart/invoice |
+| **NEXA + JSONPlaceholder** | Secondary read-only demo | Car discovery, dealer locator + dummy API contract tests |
 
-Built for a **live production site** with no staging environment. All UI tests are non-destructive.
+Built for **live/demo sites** with no staging. NEXA UI tests are non-destructive. Toolshop uses public demo credentials.
 
 ---
 
 ## 2. Repository layout
 
 ```text
-PrismStructure-nexa-playwright/
+PrismStructure-playwright/
 ├── api/
 │   ├── objects/
-│   │   └── postsApiPage.js          # Endpoint URLs, payloads, status codes
+│   │   ├── postsApiPage.js           # JSONPlaceholder endpoints
+│   │   └── toolshopApiPage.js        # Toolshop API endpoints
 │   └── testdata/
-│       └── postPayload.json         # Valid + malformed POST bodies
+│       ├── postPayload.json
+│       ├── toolshopCredentials.json
+│       └── toolshopInvoicePayload.json
 ├── ui/
 │   ├── pageobjects/
-│   │   ├── homePage.js              # Homepage, Cars menu, dealer entry
-│   │   ├── modelDetailPage.js       # Model page assertions
-│   │   ├── dealerLocatorPage.js     # /connect-to-dealer flows
-│   │   └── POManager.js             # Page object registry
+│   │   ├── POManager.js              # NEXA registry
+│   │   ├── homePage.js, modelDetailPage.js, dealerLocatorPage.js
+│   │   ├── toolshopPOManager.js      # Toolshop registry
+│   │   └── toolshop*.js              # Login, home, product, checkout, invoices
 │   └── resources/data/
-│       └── dealerSearchData.json    # Cities, pincodes, model slugs
+│       ├── dealerSearchData.json
+│       ├── toolshopUserData.json
+│       ├── toolshopBillingData.json
+│       └── toolshopProductData.json
 ├── tests/
 │   ├── ui/
-│   │   ├── 01_carDiscovery.spec.js  # 7 tests — AC1
-│   │   └── 02_dealerLocator.spec.js # 6 tests — AC2
+│   │   ├── 01_carDiscovery.spec.js
+│   │   ├── 02_dealerLocator.spec.js
+│   │   ├── 03_toolshopCatalogAuth.spec.js
+│   │   └── 04_toolshopCheckoutInvoices.spec.js
 │   └── api/
-│       └── 01_postsApi.spec.js      # 5 tests — JSONPlaceholder
+│       ├── 01_postsApi.spec.js
+│       ├── 02_toolshopAuthProductsApi.spec.js
+│       └── 03_toolshopCartInvoiceApi.spec.js
 ├── playwright.config.js
 ├── package.json
-├── playwright-report/               # HTML report (after run)
-├── playwright-artifacts/            # Traces, screenshots on failure
-└── .gitignore
+├── playwright-report/
+└── playwright-artifacts/
 ```
 
 ---
 
 ## 3. Architecture
 
-### Page Object Model (POM)
+### Page Object Model
 
 ```text
-Test Spec → POManager → HomePage | ModelDetailPage | DealerLocatorPage → Playwright Page
-API Spec  → postsApiPage + postPayload.json → Playwright request fixture
+NEXA UI Spec     → POManager → HomePage | ModelDetailPage | DealerLocatorPage
+Toolshop UI Spec → ToolshopPOManager → Login | Home | Product | Checkout | Invoices
+API Specs        → toolshopApiPage / postsApiPage + JSON testdata → request fixture
 ```
 
-`POManager` is instantiated per test in `beforeEach` and exposes:
-
-- `getHomePage()`
-- `getModelDetailPage()`
-- `getDealerLocatorPage()`
+**Separate POM managers** per application — no mixed locators in one page class.
 
 ### Playwright projects
 
 | Project | `testMatch` | `baseURL` |
 |---------|-------------|-----------|
-| `ui` | `tests/ui/**/*.spec.js` | `https://www.nexaexperience.com` |
-| `api` | `tests/api/**/*.spec.js` | `https://jsonplaceholder.typicode.com` |
+| `ui-toolshop` | `tests/ui/*toolshop*.spec.js` | `https://practicesoftwaretesting.com` |
+| `api-toolshop` | `tests/api/*toolshop*.spec.js` | `https://api.practicesoftwaretesting.com` |
+| `ui-nexa` | `tests/ui/01_*.spec.js`, `02_*.spec.js` | `https://www.nexaexperience.com` |
+| `api-jsonplaceholder` | `tests/api/01_postsApi.spec.js` | `https://jsonplaceholder.typicode.com` |
 
-UI and API suites run independently in one `npm test` invocation.
+All four projects run in one `npm test` invocation.
 
 ---
 
@@ -81,95 +90,131 @@ UI and API suites run independently in one `npm test` invocation.
 
 | Setting | Value | Rationale |
 |---------|-------|-----------|
-| `workers` | `1` | Minimize load on live production site |
-| `retries` | `1` | Tolerate occasional AEM/network flakiness |
-| `timeout` | 120s | Slow production page loads |
-| `expect.timeout` | 30s | Dealer search autocomplete wait |
-| `viewport` | 1920×1080 | Desktop layout for mega-menu |
+| `workers` | `1` | Minimize load on live/demo sites |
+| `retries` | `1` | Tolerate network flakiness |
+| `timeout` | 120s | Slow page loads |
+| `expect.timeout` | 30s | Autocomplete / checkout waits |
+| `viewport` | 1920×1080 | Desktop layout |
 | `screenshot` | `only-on-failure` | Evidence without bloat |
-| `video` / `trace` | `retain-on-failure` | Debug failed live-site runs |
+| `video` / `trace` | `retain-on-failure` | Debug failed runs |
 | `reporter` | HTML + list | Submission evidence |
 
 ---
 
-## 5. Page object design
+## 5. Toolshop page objects
+
+### `toolshopLoginPage.js`
+
+| Method | Requirement | Notes |
+|--------|-------------|-------|
+| `goto()` | TS-R2 | `/auth/login`, wait email field |
+| `login(email, password)` | TS-R2 | Fill + submit, wait account URL |
+| `loginAsCustomer()` | TS-R2 | Default demo credentials |
+| `verifyLoggedIn()` | TS-R3 | Nav menu + account URL |
+| `loginWithInvalidCredentials()` | TS-R5 | Invalid data from JSON |
+
+### `toolshopProductPage.js`
+
+| Method | Requirement | Notes |
+|--------|-------------|-------|
+| `gotoProduct(id)` | TS-R4 | `/product/{ulid}` |
+| `verifyProductDetailVisible()` | TS-R4 | `data-test=product-name`, `unit-price` |
+| `addToCartWithQuantity(n)` | TS-R6 | Increase quantity + add |
+| `verifyCartQuantityGreaterThanZero()` | TS-R7 | `data-test=cart-quantity` |
+
+### `toolshopCheckoutPage.js`
+
+| Method | Requirement | Notes |
+|--------|-------------|-------|
+| `goto()` | TS-R8 | `/checkout`, `networkidle`, `proceed-1` |
+| `fillBilling(data)` | TS-R8 | `proceed-1/2/3`, billing fields, COD select |
+| `completeCashOnDelivery()` | TS-R9 | finish + **Confirm twice** |
+| `verifyInvoiceGenerated()` | TS-R10 | Thanks message + INV- |
+
+### `toolshopInvoicesPage.js`
+
+| Method | Requirement | Notes |
+|--------|-------------|-------|
+| `goto()` | TS-R11 | Account invoices route |
+| `verifyInvoiceListVisible()` | TS-R11 | Table with INV- rows |
+
+---
+
+## 6. NEXA page objects
 
 ### `homePage.js`
 
 | Method | Requirement | Notes |
 |--------|-------------|-------|
 | `goto()` | R1 | `networkidle` with fallback |
-| `verifyHomepageLoaded()` | R1 | main + "Discover Your Perfect Car" + "Explore Now" |
-| `openCarsMenu()` | R2 | Hover + click Cars header item |
-| `getFeaturedModelCount()` | R2 | Count links in mega-menu |
-| `clickModelBySlug(slug)` | R3 | Header link or `goto /{slug}` fallback |
-| `verifyDealerLocatorEntryVisible()` | R8 | Scroll to showroom heading + Explore Nearby Showrooms |
+| `verifyHomepageLoaded()` | R1 | main + hero content |
+| `openCarsMenu()` | R2 | Hover + click Cars |
+| `clickModelBySlug(slug)` | R3 | Header link or `goto` fallback |
+| `verifyDealerLocatorEntryVisible()` | R8 | Scroll to showroom section |
 
 ### `modelDetailPage.js`
 
 | Method | Requirement | Notes |
 |--------|-------------|-------|
-| `verifyModelPageLoaded(slug)` | R3 | URL + main hero visible |
-| `verifyModelNameAndPricePresent()` | R4 | Scan visible elements for ₹/LAKH |
-| `verifyKeySpecsOrVariantsPresent()` | R4 | Variant/Specification/Mileage text |
-| `verifyBuildYourOwnLinkPresent()` | R5 | Role link "Build Your Own" |
-| `verifyInvalidUrlHandled()` | R6 | 404 text or redirect |
+| `verifyModelPageLoaded(slug)` | R3 | URL + hero |
+| `verifyModelNameAndPricePresent()` | R4 | ₹/LAKH scan |
+| `verifyBuildYourOwnLinkPresent()` | R5 | Role link |
+| `verifyInvalidUrlHandled()` | R6 | 404 or redirect |
 
 ### `dealerLocatorPage.js`
 
 | Method | Requirement | Notes |
 |--------|-------------|-------|
-| `goto()` | R9 | `/connect-to-dealer` |
 | `searchByCity(city)` | R9 | CITY tab + autocomplete |
-| `searchByPincode(pincode)` | R9 | PINCODE tab |
-| `verifyShowroomResultsDisplayed()` | R10 | "found N NEXA showroom" |
-| `verifyNavigateLinksPresent()` | R13 | Link or button "Navigate" |
+| `verifyShowroomResultsDisplayed()` | R10 | Showroom count text |
 | `submitEmptySearch()` | R12 | Empty field + Enter |
-| `verifyEmptySearchHandledGracefully()` | R12 | No crash, page functional |
+| `verifyNavigateLinksPresent()` | R13 | Navigate control |
 
 ---
 
-## 6. Test data
+## 7. Test data
 
-### `dealerSearchData.json`
+### Toolshop
 
-```json
-{
-  "validCities": ["Mumbai", "Delhi", "Bangalore"],
-  "models": { "default": "fronx" },
-  "invalidModelPath": "/nonexistent-car-xyz-999",
-  "remotePincode": { "pincode": "000000" }
-}
-```
+| File | Purpose |
+|------|---------|
+| `toolshopUserData.json` | Customer + invalid login |
+| `toolshopBillingData.json` | Checkout billing + COD |
+| `toolshopProductData.json` | Sample product ULID (refresh when DB resets) |
+| `toolshopCredentials.json` | API login body |
+| `toolshopInvoicePayload.json` | API invoice POST template |
 
-### `postPayload.json`
+### NEXA
 
-- `validPost` — title, body, userId for 201 assertion
-- `malformedPost` — numeric title, null body for no-5xx assertion
+| File | Purpose |
+|------|---------|
+| `dealerSearchData.json` | Cities, pincodes, model slugs |
+| `postPayload.json` | JSONPlaceholder valid + malformed POST |
 
 ---
 
-## 7. npm scripts
+## 8. npm scripts
 
 | Script | Command |
 |--------|---------|
-| `npm test` | All 18 tests |
+| `npm test` | All 32 tests (4 projects) |
+| `npm run test:toolshop` | Toolshop UI + API (14) |
+| `npm run test:nexa` | NEXA UI + JSONPlaceholder (18) |
 | `npm run test:smoke` | `--grep @smoke` |
 | `npm run test:regression` | `--grep @regression` |
-| `npm run test:ui` | `tests/ui` only |
-| `npm run test:api` | `tests/api` only |
+| `npm run test:ui` | All UI specs |
+| `npm run test:api` | All API specs |
 | `npm run test:headed` | Headed Chromium |
 | `npm run report` | Open HTML report |
-| `npm run install:browsers` | `playwright install chromium` |
 
-Parent project root (`qa-ai-practical-assessment-main/package.json`) forwards via `npm --prefix PrismStructure-nexa-playwright`.
+Parent root `package.json` forwards via `npm --prefix PrismStructure-playwright`.
 
 ---
 
-## 8. Installation
+## 9. Installation
 
 ```powershell
-cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-nexa-playwright
+cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-playwright
 npm install
 npx playwright install chromium
 npm test
@@ -179,87 +224,72 @@ npm test
 
 ---
 
-## 9. Selector strategy (production AEM site)
+## 10. Selector strategy
 
-Priority order:
+### Toolshop
 
-1. **ARIA roles** — `getByRole('heading'|'link'|'button')`
-2. **Stable href paths** — `a[href="/fronx"]`, `a[href*="connect-to-dealer"]`
-3. **Structural landmarks** — `main`, header `nav`
-4. **Text patterns** — regex for ₹, Km Away, showroom count (not exact copy)
+Priority: `data-test` attributes from live DOM (`product-name`, `add-to-cart`, `proceed-1`, `finish`).
 
-Avoid:
+### NEXA (production AEM)
 
-- Brittle CSS class names from AEM
-- Hidden carousel `.first()` without visibility check
-- Footer links when main-section CTAs are the requirement
+1. ARIA roles — `getByRole('heading'|'link'|'button')`
+2. Stable href paths — `a[href="/fronx"]`, `a[href*="connect-to-dealer"]`
+3. Text patterns — regex for ₹, showroom count (not exact copy)
 
 ---
 
-## 10. Debugging failed tests
+## 11. Debugging failed tests
 
 ```powershell
-# View last HTML report
 npm run report
-
-# Run single test headed
-npx playwright test tests/ui/01_carDiscovery.spec.js -g "TC-UI-03" --headed
-
-# Open trace from playwright-artifacts/
-npx playwright show-trace playwright-artifacts\<trace-folder>\trace.zip
+npx playwright test tests/ui/04_toolshopCheckoutInvoices.spec.js --headed
+npx playwright show-trace playwright-artifacts\<folder>\trace.zip
 ```
-
-Common failure causes on live NEXA:
 
 | Symptom | Fix |
 |---------|-----|
-| Hidden model link | Use `openCarsMenu()` or `gotoModel(slug)` |
-| Dealer section not found | Scroll to "Locate Your Nearest NEXA Showroom" |
-| Navigate href empty | Assert button enabled / map opens |
-| Timeout on homepage | Increase `networkidle` tolerance in `goto()` |
+| Product page empty / timeout | Refresh `sampleProductId` from `GET /products` |
+| Checkout stuck on billing | Fill `house_number`; wait `networkidle` on checkout |
+| Invoice not generated | Click **Confirm** twice after finish |
+| NEXA hidden model link | `openCarsMenu()` or `gotoModel(slug)` |
+| API cart add 404 | Stale product ULID in test data |
 
 ---
 
-## 11. Test results (last verified run)
+## 12. Test results (last verified)
 
 ```text
-18 passed (1.1–1.2m)
-  UI:  13 passed
-  API:  5 passed
+Toolshop:  14 passed (~53s)   — npm run test:toolshop
+Full suite: 32 passed (~6–7m) — npm test
+  ui-toolshop:           7 passed
+  api-toolshop:          7 passed
+  ui-nexa:              13 passed
+  api-jsonplaceholder:   5 passed
 ```
 
-Report: `PrismStructure-nexa-playwright/playwright-report/index.html`
+Report: `PrismStructure-playwright/playwright-report/index.html`  
+Copy to `execution-evidence/` for submission.
 
 ---
 
-## 12. Requirements traceability
+## 13. Requirements traceability
 
-| Req | Automated TC | Manual TC |
-|-----|--------------|-----------|
-| R1 | TC-UI-01 | TC-MAN-01 |
-| R2 | TC-UI-02 | TC-MAN-02, TC-MAN-03 |
-| R3 | TC-UI-03 | TC-MAN-04 |
-| R4 | TC-UI-04 | TC-MAN-05, TC-MAN-06 |
-| R5 | TC-UI-05 | TC-MAN-07 |
-| R6 | TC-UI-06 | TC-MAN-08 |
-| R7 | TC-UI-07 | TC-MAN-09 |
-| R8 | TC-UI-08 | TC-MAN-11, TC-MAN-12 |
-| R9 | TC-UI-09 | TC-MAN-13, TC-MAN-14 |
-| R10 | TC-UI-09, TC-UI-10 | TC-MAN-15 |
-| R11 | TC-UI-11 (soft) | TC-MAN-16 |
-| R12 | TC-UI-12 | TC-MAN-17, TC-MAN-18 |
-| R13 | TC-UI-10 | TC-MAN-19, TC-MAN-20 |
-| RA1–RA5 | TC-API-01 to TC-API-05 | — |
+See `requirements-and-risk-analysis.md` for full Part B (Toolshop) and Part A (NEXA) mapping.
+
+| Suite | Manual CSV | Automated IDs |
+|-------|------------|-----------------|
+| Toolshop | `ToolshopFunctionalTestCase.csv` | TC-TS-UI-*, TC-TS-API-* |
+| NEXA | `FunctionalTestCase.csv` | TC-UI-*, TC-API-* |
 
 ---
 
-## 13. Future enhancements
+## 14. Future enhancements
 
-- Tag-based CI: API suite in pipeline; UI smoke on schedule only
+- CI: API suites in pipeline; UI smoke on schedule
+- Dynamic product ID fetch in `beforeAll` for Toolshop resilience
 - `execution-evidence/` copy script post-test
-- AC3 Help Me Select read-only quiz flow
-- Optional Playwright MCP exploration for selector discovery before code changes
+- NEXA AC3 Help Me Select read-only quiz flow
 
 ---
 
-*See also: `ai-prompts/session-handoff.md`, `readme.md`, `requirements-and-risk-analysis (1).md`*
+*See also: `ai-prompts/session-handoff.md`, `readme.md`, `requirements-and-risk-analysis.md`, `project-info.md`*

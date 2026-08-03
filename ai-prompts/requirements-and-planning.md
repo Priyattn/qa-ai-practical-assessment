@@ -74,7 +74,7 @@ Configured project-level MCP at `.cursor/mcp.json`:
 
 **Validation Notes:**
 - Live site exploration confirmed `/connect-to-dealer`, Cars mega-menu, CITY/PINCODE tabs, homepage showroom section.
-- Playwright MCP requires Cursor restart to load; framework was built with standard Playwright CLI in `PrismStructure-nexa-playwright/`.
+- Playwright MCP requires Cursor restart to load; framework was built with standard Playwright CLI in `PrismStructure-playwright/`.
 
 ---
 
@@ -86,7 +86,7 @@ Configured project-level MCP at `.cursor/mcp.json`:
 
 **AI Response Summary:**
 
-Built full Playwright framework under `PrismStructure-nexa-playwright/`:
+Built full Playwright framework under `PrismStructure-playwright/`:
 - Page Object Model: `homePage`, `modelDetailPage`, `dealerLocatorPage`, `POManager`
 - UI specs: `01_carDiscovery.spec.js` (7 tests), `02_dealerLocator.spec.js` (6 tests)
 - API spec: `01_postsApi.spec.js` (5 tests)
@@ -112,12 +112,12 @@ See `frameworkdevelopment.md` for full technical detail.
 
 **Correct path:**
 ```text
-D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-nexa-playwright
+D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-playwright
 ```
 
 **Commands:**
 ```powershell
-cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-nexa-playwright
+cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-playwright
 npm install
 npx playwright install chromium
 npm test
@@ -126,10 +126,44 @@ npm test
 **Common mistakes:**
 - Running from `D:\TrainingQA\qa-ai-practical-assessment-main` (outer folder — no package.json)
 - Running `npx playwright test` from outer wrapper folder (no `package.json` at that level)
-- Use `npm test` from `PrismStructure-nexa-playwright/` or `npm test` from inner project root (forwarding scripts added)
+- Use `npm test` from `PrismStructure-playwright/` or `npm test` from inner project root (forwarding scripts added)
 
 **Validation Notes:**
-- Verified 18 passed from `PrismStructure-nexa-playwright/` directory.
-- Parent `package.json` updated with `npm --prefix PrismStructure-nexa-playwright` scripts.
+- Verified 18 passed from `PrismStructure-playwright/` directory.
+- Parent `package.json` updated with `npm --prefix PrismStructure-playwright` scripts.
+
+---
+
+## Entry 4 — Toolshop Part B scope (2026-08-01)
+
+**Prompt:**
+
+Assessment doc Part B — Practice Software Testing Toolshop. Add to same repo/framework without second UI folder.
+
+**AI Response Summary:**
+
+### Toolshop scope confirmed
+
+| Layer | In scope |
+|-------|----------|
+| UI | Login, catalog, product detail, cart, COD checkout (double Confirm), My Invoices |
+| API | Login/token, products, cart create/add, invoice POST, invoices GET |
+
+### Assessment-critical behaviors
+
+1. Double **Confirm** on checkout for invoice generation
+2. `data-test` selectors from live DOM exploration
+3. Demo customer: `customer@practicesoftwaretesting.com` / `welcome01`
+4. Separate Playwright projects per base URL — no mixed baseURL in one project
+
+### Deliverables added
+
+- `manual-test-cases/ToolshopFunctionalTestCase.csv`
+- Toolshop section in `project-info.md` and `requirements-and-risk-analysis.md`
+- `TC-TS-UI-*` and `TC-TS-API-*` automation IDs
+
+**Validation Notes:**
+- Merged into `PrismStructure-playwright/` — NEXA specs unchanged.
+- See `ai-prompts/documentation-and-summary.md` Entry 2 for full delivery list.
 
 ---

@@ -100,3 +100,32 @@ Original manual CSV template had design-only columns (no Pass/Fail). Execution s
 - Pricing, model lineup, and dealer counts are content-dependent on a live marketing CMS — assertions focus on presence and structure, not exact copy.
 
 ---
+
+## Entry 2 — Toolshop manual test cases (2026-08-03)
+
+**Prompt:**
+
+Generate Toolshop Part B manual test cases for login, catalog, cart, COD checkout, invoices, and API login. Output CSV with automation cross-reference.
+
+**AI Response Summary:**
+
+8 manual cases in `manual-test-cases/ToolshopFunctionalTestCase.csv` (TC-MAN-TS-01 to TC-MAN-TS-08).
+
+### Requirements traceability (Toolshop)
+
+| Requirement | Manual TC | Automation TC |
+|---|---|---|
+| TS-R1 — Catalog | TC-MAN-TS-01 | TC-TS-UI-01 |
+| TS-R2/R3 — Login | TC-MAN-TS-02 | TC-TS-UI-02 |
+| TS-R4 — Product detail | TC-MAN-TS-03 | TC-TS-UI-03 |
+| TS-R6/R7 — Add to cart | TC-MAN-TS-04 | TC-TS-UI-04 |
+| TS-R8–R10 — COD + invoice | TC-MAN-TS-05 | TC-TS-UI-05 |
+| TS-R11 — My Invoices | TC-MAN-TS-06 | TC-TS-UI-07 |
+| TS-R5 — Invalid login | TC-MAN-TS-07 | TC-TS-UI-06 |
+| TS-RA1 — API login | TC-MAN-TS-08 | TC-TS-API-01 |
+
+**Validation Notes:**
+- All 8 cases marked Pass via Playwright automation (2026-08-03).
+- TC-MAN-TS-05 documents double Confirm checkout behavior per assessment doc.
+
+---

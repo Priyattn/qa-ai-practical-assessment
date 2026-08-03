@@ -3,8 +3,12 @@ const { expect } = require("@playwright/test");
 /**
  * NEXA Homepage — car discovery entry point.
  * Selectors favour href paths and structural elements over brittle copy.
+ * @class HomePage
  */
 class HomePage {
+  /**
+   * @param {import('@playwright/test').Page} page - Playwright page instance
+   */
   constructor(page) {
     this.page = page;
     this.baseUrl = "https://www.nexaexperience.com";
@@ -23,11 +27,13 @@ class HomePage {
     ).first();
   }
 
+  /** Open NEXA homepage. @returns {Promise<void>} */
   async goto() {
     await this.page.goto(this.baseUrl, { waitUntil: "domcontentloaded" });
     await this.page.waitForLoadState("networkidle", { timeout: 45000 }).catch(() => {});
   }
 
+  /** Open Cars mega-menu via hover/click. @returns {Promise<void>} */
   async openCarsMenu() {
     const carsMenu = this.page.getByText("Cars", { exact: true }).first();
     if (await carsMenu.isVisible()) {
@@ -38,6 +44,7 @@ class HomePage {
     }
   }
 
+  /** Assert homepage URL, title, hero, and featured content. @returns {Promise<void>} */
   async verifyHomepageLoaded() {
     await expect(this.page).toHaveURL(/nexaexperience\.com/);
     const title = await this.page.title();
@@ -52,6 +59,7 @@ class HomePage {
     });
   }
 
+  /** @returns {Promise<number>} Count of model links in menu or hero */
   async getFeaturedModelCount() {
     await this.openCarsMenu();
     const menuModelCount = await this.page.locator(
@@ -66,6 +74,7 @@ class HomePage {
     return await this.page.locator('main a[href="/e-vitara"], main a[href*="/e-vitara"]').count();
   }
 
+  /** @returns {Promise<number>} Count of visible model links in header/nav */
   async getVisibleModelLinkCount() {
     const slugs = this.modelSlugs;
     let visible = 0;
@@ -78,6 +87,11 @@ class HomePage {
     return visible;
   }
 
+  /**
+   * Click model link by slug or direct navigation fallback.
+   * @param {string} slug - Model path slug
+   * @returns {Promise<void>}
+   */
   async clickModelBySlug(slug) {
     const headerLink = this.page.locator(`header a[href="/${slug}"], nav a[href="/${slug}"]`).first();
     if (await headerLink.count() > 0 && await headerLink.isVisible()) {
@@ -88,16 +102,23 @@ class HomePage {
     await this.page.waitForLoadState("domcontentloaded");
   }
 
+  /**
+   * Direct navigation to model page by slug.
+   * @param {string} slug - Model path slug
+   * @returns {Promise<void>}
+   */
   async gotoModel(slug) {
     await this.page.goto(`${this.baseUrl}/${slug}`, { waitUntil: "domcontentloaded" });
     await this.page.waitForLoadState("domcontentloaded");
   }
 
+  /** Click first featured model link in hero/menu. @returns {Promise<void>} */
   async clickFirstFeaturedModel() {
     await this.featuredModelLinks.first().click();
     await this.page.waitForLoadState("domcontentloaded");
   }
 
+  /** Open mobile/hamburger navigation if visible. @returns {Promise<void>} */
   async openNavigationMenu() {
     if (await this.menuButton.isVisible()) {
       await this.menuButton.click();
@@ -105,11 +126,13 @@ class HomePage {
     }
   }
 
+  /** Assert category labels visible in navigation. @returns {Promise<void>} */
   async verifyCategoryLabelsVisible() {
     const categories = this.page.getByText(/Hatchback|Sedan|SUV|Hybrid/i);
     await expect(categories.first()).toBeVisible({ timeout: 10000 });
   }
 
+  /** Assert showroom locator section visible on homepage. @returns {Promise<void>} */
   async verifyDealerLocatorEntryVisible() {
     const showroomHeading = this.page.getByRole("heading", {
       name: /Locate Your Nearest NEXA Showroom/i,
@@ -121,6 +144,7 @@ class HomePage {
     ).toBeVisible({ timeout: 15000 });
   }
 
+  /** Navigate to connect-to-dealer page. @returns {Promise<void>} */
   async navigateToDealerLocator() {
     await this.page.goto(`${this.baseUrl}/connect-to-dealer`, {
       waitUntil: "domcontentloaded",

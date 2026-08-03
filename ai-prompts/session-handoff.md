@@ -1,8 +1,9 @@
-# Session Handoff — NEXA QA Assessment
+# Session Handoff — QA AI Practical Assessment
 
-**Date:** 2026-07-31  
-**Status:** Framework complete, 18/18 automated tests passing  
-**Primary AI tool:** Cursor (Composer)
+**Date:** 2026-08-03  
+**Status:** Framework complete — Toolshop 14/14, full suite 32/32 passing  
+**Primary AI tool:** Cursor (Composer)  
+**Repo:** https://github.com/Priyattn/qa-ai-practical-assessment
 
 ---
 
@@ -10,153 +11,145 @@
 
 | Item | Status | Location |
 |------|--------|----------|
-| Requirements & risk analysis review (AC1, AC2) | Done | `ai-prompts/requirements-and-planning.md` |
-| Manual test cases (AC1 + AC2, 20 cases) | Done | `manual-test-cases/FunctionalTestCase.csv`, `ai-prompts/test-design.md` |
-| Playwright framework (POM, UI + API) | Done | `PrismStructure-nexa-playwright/` |
-| Automated test suite | **18 passed** | `PrismStructure-nexa-playwright/tests/` |
-| Playwright MCP config | Done | `.cursor/mcp.json` (restart Cursor to activate) |
-| Parent npm scripts | Done | `package.json` (inner project root) |
+| Requirements & risk analysis (Toolshop + NEXA) | Done | `requirements-and-risk-analysis.md` |
+| Toolshop manual tests (8 cases) | Done | `manual-test-cases/ToolshopFunctionalTestCase.csv` |
+| NEXA manual tests (20 cases) | Done | `manual-test-cases/FunctionalTestCase.csv` |
+| Playwright framework (dual POM, 4 projects) | Done | `PrismStructure-playwright/` |
+| Toolshop automation | **14 passed** | `03_toolshop*.spec.js`, `02/03_toolshop*.spec.js` |
+| NEXA + API automation | **18 passed** | `01_*.spec.js`, `02_*.spec.js` |
+| Exploratory notes | Done | `exploratory-testing/exploratory-notes.md` |
+| Defect report | Done | `defects/defect-report.md` |
 | Framework documentation | Done | `frameworkdevelopment.md` |
+| Project info (11 workflow points) | Done | `project-info.md` |
 | AI prompt archive | Done | `ai-prompts/*.md` |
+| Execution evidence | Done | `execution-evidence/index.html` |
 
 ---
 
-## 2. Application scope (do not expand without review)
+## 2. Application scope
 
-### In scope
-- **NEXA UI (read-only):** https://www.nexaexperience.com/
-  - AC1: Homepage → Cars menu → model detail → price/specs → Build Your Own link
-  - AC2: Dealer locator at `/connect-to-dealer` — city/pincode search, results, validation
-- **API dummy:** https://jsonplaceholder.typicode.com/ — GET/POST posts contract tests
+### Toolshop (Part B — primary)
 
-### Out of scope
-- Test drive, service booking, Book a Car, dealer contact / lead forms
-- Configurator submission
-- AC3 quiz completion (optional stretch)
+- **UI:** https://practicesoftwaretesting.com/
+- **API:** https://api.practicesoftwaretesting.com/
+- Login, catalog, add to cart, COD checkout (double Confirm), My Invoices
+- API: login, products, cart, invoice POST/GET
+
+### NEXA (secondary — read-only)
+
+- **UI:** https://www.nexaexperience.com/
+- AC1 car discovery, AC2 dealer locator — no form submissions
+
+### JSONPlaceholder (dummy API)
+
+- GET/POST `/posts` contract validation
+
+**Out of scope:** NEXA test drive, booking, dealer contact; Toolshop payment gateways beyond COD demo.
 
 ---
 
-## 3. How to run tests (critical path)
+## 3. How to run tests
 
 ```powershell
-cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-nexa-playwright
+cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-playwright
 npm test
 ```
 
-**Wrong paths (will fail):**
-- `D:\TrainingQA\qa-ai-practical-assessment-main` — no package.json
-- `npx playwright test` from outer wrapper folder — wrong test root / ENOENT
-
-**Commands:**
 | Command | Purpose |
 |---------|---------|
-| `npm test` | All 18 tests |
-| `npm run test:ui` | NEXA UI only (13) |
-| `npm run test:api` | API only (5) |
+| `npm test` | All 32 tests |
+| `npm run test:toolshop` | Toolshop only (14) |
+| `npm run test:nexa` | NEXA + JSONPlaceholder (18) |
 | `npm run test:smoke` | @smoke tags |
 | `npm run test:headed` | Visible browser |
 | `npm run report` | HTML report |
 
-From inner project root (one level up from `PrismStructure-nexa-playwright`):
+From inner project root:
 ```powershell
 cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main
-npm test
+npm run test:toolshop
 ```
 
 ---
 
 ## 4. Automated test inventory
 
-### AC1 — Car Discovery (`01_carDiscovery.spec.js`)
+### Toolshop UI (`03_toolshopCatalogAuth.spec.js`, `04_toolshopCheckoutInvoices.spec.js`)
+
 | ID | Scenario | Tags |
 |----|----------|------|
-| TC-UI-01 | Homepage loads with featured content | @smoke @regression |
-| TC-UI-02 | Cars menu exposes model links | @regression |
-| TC-UI-03 | Navigate to model detail page | @smoke @regression |
-| TC-UI-04 | Model detail price and specs | @regression |
-| TC-UI-05 | Build Your Own link present | @regression |
-| TC-UI-06 | Invalid model URL graceful | @regression |
-| TC-UI-07 | Homepage load time budget | @regression |
+| TC-TS-UI-01 | Homepage catalog | @smoke @regression |
+| TC-TS-UI-02 | Customer login | @smoke @regression |
+| TC-TS-UI-03 | Product detail name/price | @regression |
+| TC-TS-UI-04 | Add to cart quantity | @smoke @regression |
+| TC-TS-UI-05 | COD checkout + invoice | @smoke @regression |
+| TC-TS-UI-06 | Invalid login error | @regression |
+| TC-TS-UI-07 | My Invoices list | @regression |
 
-### AC2 — Dealer Locator (`02_dealerLocator.spec.js`)
+### Toolshop API (`02_toolshopAuthProductsApi.spec.js`, `03_toolshopCartInvoiceApi.spec.js`)
+
 | ID | Scenario | Tags |
 |----|----------|------|
-| TC-UI-08 | Showroom entry on homepage | @regression |
-| TC-UI-09 | Valid city search returns results | @smoke @regression |
-| TC-UI-10 | Navigate links on results | @regression |
-| TC-UI-11 | Invalid pincode no crash | @regression |
-| TC-UI-12 | Empty search handled | @regression |
-| TC-UI-13 | Locator page load timeout | @regression |
+| TC-TS-API-01 | POST login → token | @smoke @regression |
+| TC-TS-API-02 | GET products | @regression |
+| TC-TS-API-03 | GET product by id | @regression |
+| TC-TS-API-04 | POST create cart | @smoke @regression |
+| TC-TS-API-05 | Add item + GET cart | @regression |
+| TC-TS-API-06 | POST invoice COD | @smoke @regression |
+| TC-TS-API-07 | GET invoices | @regression |
 
-### API (`01_postsApi.spec.js`)
-| ID | Scenario | Tags |
-|----|----------|------|
-| TC-API-01 | GET /posts list | @smoke @regression |
-| TC-API-02 | GET /posts/{id} | @smoke @regression |
-| TC-API-03 | GET invalid id 404 | @regression |
-| TC-API-04 | POST valid 201 | @smoke @regression |
-| TC-API-05 | POST malformed no 5xx | @regression |
+### NEXA UI + API
+
+See `frameworkdevelopment.md` sections 6 and 12 — TC-UI-01 to TC-UI-13, TC-API-01 to TC-API-05.
 
 ---
 
-## 5. Manual tests (not automated)
+## 5. Known behaviors
 
-20 cases in `manual-test-cases/FunctionalTestCase.csv` (TC-MAN-01 to TC-MAN-20). Execute manually on live site using steps in CSV or `ai-prompts/test-design.md`.
+### Toolshop
 
----
+1. **Double Confirm** on checkout required for invoice
+2. **`house_number`** required in billing form
+3. **Product ULIDs** rotate when demo DB resets — update `toolshopProductData.json`
+4. Current sample ID: `01KZ2WFC8DM9KV0TCKB1MFSDRB` (Combination Pliers)
 
-## 6. Known production behaviors
+### NEXA
 
-1. **Cars mega-menu** — model links hidden until Cars menu hover/click
-2. **Featured hero** — e-vitara in hero; not all models visible on first paint
-3. **Dealer locator** — use `/connect-to-dealer`; CITY and PINCODE tabs
-4. **Homepage dealer entry** — "Locate Your Nearest NEXA Showroom" section (scroll down), not footer link
-5. **Navigate control** — may be button without `href`; opens map behavior
-6. **TC-UI-11 / TC-MAN-16** — production may show default regional dealers instead of strict empty state
-7. **Content drift** — prices, models, copy may change (AEM CMS)
-
----
-
-## 7. Recommended next steps
-
-| Priority | Task |
-|----------|------|
-| High | Execute manual CSV cases; record pass/fail in spreadsheet |
-| High | Copy `PrismStructure-nexa-playwright/playwright-report/` to `execution-evidence/` for submission |
-| Medium | Fill dates in `project-info.md` and `requirements-and-risk-analysis.md` |
-| Medium | Exploratory notes in `exploratory-testing/exploratory-notes.md` |
-| Low | AC3 Help Me Select (optional stretch) |
-| Low | CI pipeline (GitHub Actions) for API tests only if production UI too flaky in CI |
+1. Cars mega-menu links hidden until hover
+2. Dealer locator at `/connect-to-dealer`
+3. Navigate may be button without `href`
+4. CMS content drift on live site
 
 ---
 
-## 8. File index
+## 6. File index
 
 ```text
 qa-ai-practical-assessment-main/
-├── PrismStructure-nexa-playwright/                    ← Playwright project (RUN TESTS HERE)
-├── manual-test-cases/FunctionalTestCase.csv
+├── PrismStructure-playwright/           ← RUN TESTS HERE
+├── manual-test-cases/
+│   ├── FunctionalTestCase.csv           ← NEXA (20)
+│   └── ToolshopFunctionalTestCase.csv ← Toolshop (8)
 ├── ai-prompts/
-│   ├── requirements-and-planning.md
-│   ├── test-design.md
-│   ├── test-data.md
-│   ├── automation-and-debugging.md
-│   ├── documentation-and-summary.md
-│   └── session-handoff.md         ← this file
+├── defects/defect-report.md
+├── exploratory-testing/exploratory-notes.md
+├── execution-evidence/
 ├── frameworkdevelopment.md
 ├── requirements-and-risk-analysis.md
 ├── project-info.md
-├── readme.md
+└── readme.md
 ```
 
 ---
 
-## 9. Contacts / references
+## 7. Git push (user action)
 
-- **NEXA site:** https://www.nexaexperience.com/
-- **Dealer locator:** https://www.nexaexperience.com/connect-to-dealer
-- **JSONPlaceholder:** https://jsonplaceholder.typicode.com/
-- **Playwright docs:** https://playwright.dev/
+```powershell
+cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main
+git add .
+git commit -m "feat: QA assessment — Toolshop + NEXA Playwright suite"
+git push -u origin main
+```
 
 ---
 

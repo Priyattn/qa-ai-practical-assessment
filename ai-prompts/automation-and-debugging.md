@@ -15,7 +15,7 @@
 ### Framework structure created
 
 ```text
-PrismStructure-nexa-playwright/
+PrismStructure-playwright/
 ├── api/objects/postsApiPage.js
 ├── api/testdata/postPayload.json
 ├── ui/pageobjects/homePage.js, modelDetailPage.js, dealerLocatorPage.js, POManager.js
@@ -69,7 +69,7 @@ Terminal errors: `ENOENT package.json`, `Cannot find module '@playwright/test'`,
 
 Always run from:
 ```powershell
-cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-nexa-playwright
+cd D:\TrainingQA\qa-ai-practical-assessment-main\qa-ai-practical-assessment-main\PrismStructure-playwright
 npm test
 ```
 
@@ -84,11 +84,11 @@ npm test
 ```text
 D:\TrainingQA\qa-ai-practical-assessment-main                    ← WRONG
   └── qa-ai-practical-assessment-main                            ← OK (npm scripts)
-      └── PrismStructure-nexa-playwright                         ← BEST
+      └── PrismStructure-playwright                         ← BEST
 ```
 
 **Validation Notes:**
-- User repeatedly stuck at outer folder; provided step-by-step `cd qa-ai-practical-assessment-main` then `cd PrismStructure-nexa-playwright`.
+- User repeatedly stuck at outer folder; provided step-by-step `cd qa-ai-practical-assessment-main` then `cd PrismStructure-playwright`.
 
 ---
 
@@ -102,9 +102,42 @@ Playwright MCP configuration
 
 Created `.cursor/mcp.json` with `@playwright/mcp@latest` for browser exploration via Cursor MCP tools. Requires Cursor Settings → Tools & MCP enabled and IDE restart.
 
-Framework execution does **not** require MCP — use `npm test` in `PrismStructure-nexa-playwright/`.
+Framework execution does **not** require MCP — use `npm test` in `PrismStructure-playwright/`.
 
 **Validation Notes:**
 - MCP catalog may not show Playwright until restart; CLI Playwright used for framework validation.
+
+---
+
+## Entry 4 — Toolshop Part B integration (2026-08-03)
+
+**Prompt:**
+
+Add Toolshop assessment specs to existing framework — separate page objects, manual CSV, project-info, folder rename, JSDoc.
+
+**AI Response Summary:**
+
+### Changes
+
+- Added `ToolshopPOManager` + 5 Toolshop page objects (`toolshop*.js`)
+- Added `03_toolshopCatalogAuth.spec.js`, `04_toolshopCheckoutInvoices.spec.js`
+- Added `02_toolshopAuthProductsApi.spec.js`, `03_toolshopCartInvoiceApi.spec.js`
+- Playwright projects: `ui-toolshop`, `api-toolshop`
+- Folder: `PrismStructure-playwright/` (renamed from `PrismStructure-nexa-playwright`)
+
+### Debugging fixes
+
+| Issue | Fix |
+|-------|-----|
+| Product page timeout | Stale ULID — updated `toolshopProductData.json` |
+| API cart add 404 | Same stale product ID |
+| Checkout flake | `networkidle` on checkout; wait cart badge before navigate |
+| Invoice not created | Double Confirm click in `completeCashOnDelivery()` |
+| Billing blocked | Added `house_number` to billing data |
+| Cart create status | Accept HTTP 200 or 201 |
+
+**Validation Notes:**
+- `npm run test:toolshop` — 14/14 pass.
+- `npm test` — 32/32 pass.
 
 ---

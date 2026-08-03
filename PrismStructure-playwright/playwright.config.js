@@ -2,7 +2,9 @@
 const { defineConfig } = require("@playwright/test");
 
 const NEXA_BASE_URL = "https://www.nexaexperience.com";
-const API_BASE_URL = "https://jsonplaceholder.typicode.com";
+const TOOLSHOP_UI_URL = "https://practicesoftwaretesting.com";
+const JSONPLACEHOLDER_URL = "https://jsonplaceholder.typicode.com";
+const TOOLSHOP_API_URL = "https://api.practicesoftwaretesting.com";
 
 module.exports = defineConfig({
   testDir: "./tests",
@@ -29,18 +31,24 @@ module.exports = defineConfig({
   },
   projects: [
     {
-      name: "ui",
-      testMatch: "tests/ui/**/*.spec.js",
-      use: {
-        baseURL: NEXA_BASE_URL,
-      },
+      name: "ui-nexa",
+      testMatch: ["tests/ui/01_*.spec.js", "tests/ui/02_*.spec.js"],
+      use: { baseURL: NEXA_BASE_URL },
     },
     {
-      name: "api",
-      testMatch: "tests/api/**/*.spec.js",
-      use: {
-        baseURL: API_BASE_URL,
-      },
+      name: "ui-toolshop",
+      testMatch: ["tests/ui/*toolshop*.spec.js"],
+      use: { baseURL: TOOLSHOP_UI_URL },
+    },
+    {
+      name: "api-jsonplaceholder",
+      testMatch: ["tests/api/01_postsApi.spec.js"],
+      use: { baseURL: JSONPLACEHOLDER_URL },
+    },
+    {
+      name: "api-toolshop",
+      testMatch: ["tests/api/*toolshop*.spec.js"],
+      use: { baseURL: TOOLSHOP_API_URL },
     },
   ],
   outputDir: "playwright-artifacts",

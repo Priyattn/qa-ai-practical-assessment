@@ -1,0 +1,10 @@
+{
+  "customer": {
+    "email": "customer@practicesoftwaretesting.com",
+    "password": "welcome01"
+  },
+  "invalid": {
+    "email": "bad@example.com",
+    "password": "wrongpass"
+  }
+}
